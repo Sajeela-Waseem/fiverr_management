@@ -5,10 +5,13 @@ import Signup from "./Pages/signup";
 import Buyer from "./Pages/buyer";
 import Seller from "./Pages/seller";
 import Search from "./Pages/search";
+import ScrollToTop from "./components/ScrollToTop";
+
 
 const App = () => {
   return (
     <Router>
+        <ScrollToTop />
       <Routes>
         <Route path="/" element={<Navigate to="/buyer" />} />
         <Route path="/signup" element={<Signup />} />
