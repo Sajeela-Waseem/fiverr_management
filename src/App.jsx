@@ -6,6 +6,7 @@ import Buyer from "./Pages/buyer";
 import Seller from "./Pages/seller";
 import Search from "./Pages/search";
 import ScrollToTop from "./components/ScrollToTop";
+import "./App.css"; // or "./App.css"
 
 
 const App = () => {
