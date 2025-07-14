@@ -4,6 +4,7 @@ import Login from "./Pages/login";
 import Signup from "./Pages/signup";
 import Buyer from "./Pages/buyer";
 import Seller from "./Pages/seller";
+import Search from "./Pages/search";
 
 const App = () => {
   return (
@@ -14,7 +15,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/buyer" element={<Buyer />} />
         <Route path="/seller" element={<Seller />} />
-
+        <Route path="/search" element={<Search />} /> 
         {/* Optional: redirect old Fiverr route */}
         <Route path="/fiverr" element={<Navigate to="/buyer" />} />
       </Routes>

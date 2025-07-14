@@ -9,10 +9,14 @@ import Footer from "../components/footer";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
+
 const Seller = () => {
   const [user, setUser] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [gigLink, setGigLink] = useState("");
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [tags, setTags] = useState("");
   const [discount, setDiscount] = useState("");
   const [duration, setDuration] = useState("");
   const [gigTitle, setGigTitle] = useState("");
@@ -44,12 +48,16 @@ const Seller = () => {
     try {
       await addDoc(collection(db, "promotedGigs"), {
         gigLink: normalizedLink,
-        discount,
-        duration,
         gigTitle,
         gigImage,
+        category,
+        subcategory,
+        tags: tags.split(",").map(tag => tag.trim().toLowerCase()),
+        discount,
+        duration,
+        couponCode: generateCoupon(),
+        sellerEmail: user.email,
         createdAt: serverTimestamp(),
-        userEmail: user.email,
       });
 
       alert("Promotion submitted!");
@@ -58,11 +66,30 @@ const Seller = () => {
       setDuration("");
       setGigTitle("");
       setGigImage("");
+      setCategory("");
+      setSubcategory("");
+      setTags("");
       setShowForm(false);
     } catch (error) {
       console.error("❌ Firestore error:", error);
       alert("Failed to submit promotion.");
     }
+  };
+
+  const generateCoupon = () => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  };
+
+  const subcategoryOptions = {
+    "Programming & Tech": ["Web Development", "App Development", "Automation"],
+    "Marketing & Sales": ["Email Marketing", "Social Media", "SEO"],
+    "Photography & Editing": ["Photo Editing", "Retouching", "Color Grading"],
+    "Graphics & Design": ["Logo Design", "Branding", "Illustration"],
+    "Virtual Assistant": ["Admin Tasks", "Data Entry", "Scheduling"],
+    "Content Writing": ["Blogs", "Product Descriptions", "Proofreading"],
+    "UI/UX Design": ["Wireframes", "Prototypes", "User Research"],
+    "Customer Support": ["Live Chat", "Email Support", "CRM Management"]
   };
 
   return (
@@ -94,7 +121,7 @@ const Seller = () => {
 
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-60">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl h-[80vh] flex overflow-hidden relative">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-6xl flex overflow-hidden relative">
             <div className="hidden md:block w-1/2">
               <img
                 src={form}
@@ -114,6 +141,7 @@ const Seller = () => {
 
               <form onSubmit={handlePromoteSubmit} className="flex flex-col h-full">
                 <div className="flex-grow overflow-y-auto pr-1">
+
                   <label className="block mb-2 text-sm font-medium">Gig Title</label>
                   <input
                     type="text"
@@ -124,45 +152,101 @@ const Seller = () => {
                     className="w-full mb-4 px-4 py-2 border rounded"
                   />
 
-                  <label className="block mb-2 text-sm font-medium">Gig Image URL</label>
-                  <input
-                    type="url"
-                    value={gigImage}
-                    onChange={(e) => setGigImage(e.target.value)}
-                    required
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full mb-4 px-4 py-2 border rounded"
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mb-2 text-sm font-medium">Gig Image URL</label>
+                      <input
+                        type="url"
+                        value={gigImage}
+                        onChange={(e) => setGigImage(e.target.value)}
+                        required
+                        placeholder="https://example.com/image.jpg"
+                        className="w-full mb-4 px-4 py-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium">Gig Link</label>
+                      <input
+                        type="url"
+                        value={gigLink}
+                        onChange={(e) => setGigLink(e.target.value)}
+                        required
+                        placeholder="https://your-gig-link.com"
+                        className="w-full mb-4 px-4 py-2 border rounded"
+                      />
+                    </div>
+                  </div>
 
-                  <label className="block mb-2 text-sm font-medium">Gig Link</label>
-                  <input
-                    type="url"
-                    value={gigLink}
-                    onChange={(e) => setGigLink(e.target.value)}
-                    required
-                    placeholder="https://your-gig-link.com"
-                    className="w-full mb-4 px-4 py-2 border rounded"
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mb-2 text-sm font-medium">Category</label>
+                      <select
+                        value={category}
+                        onChange={(e) => {
+                          setCategory(e.target.value);
+                          setSubcategory("");
+                        }}
+                        required
+                        className="w-full mb-4 px-4 py-2 border rounded"
+                      >
+                        <option value="">Select a category</option>
+                        {Object.keys(subcategoryOptions).map((cat) => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium">Subcategory</label>
+                      <select
+                        value={subcategory}
+                        onChange={(e) => setSubcategory(e.target.value)}
+                        required
+                        disabled={!category}
+                        className="w-full mb-4 px-4 py-2 border rounded"
+                      >
+                        <option value="">Select a subcategory</option>
+                        {category && subcategoryOptions[category].map((sub) => (
+                          <option key={sub} value={sub}>{sub}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
 
-                  <label className="block mb-2 text-sm font-medium">Discount (%)</label>
-                  <input
-                    type="number"
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                    required
-                    placeholder="10"
-                    className="w-full mb-4 px-4 py-2 border rounded"
-                  />
-
-                  <label className="block mb-2 text-sm font-medium">Promotion Duration (days)</label>
-                  <input
-                    type="number"
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    required
-                    placeholder="7"
-                    className="w-full mb-4 px-4 py-2 border rounded"
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mb-2 text-sm font-medium">Tags (comma-separated)</label>
+                      <input
+                        type="text"
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
+                        required
+                        placeholder="e.g. logo, branding, business card"
+                        className="w-full mb-4 px-4 py-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium">Discount (%)</label>
+                      <input
+                        type="number"
+                        value={discount}
+                        onChange={(e) => setDiscount(e.target.value)}
+                        required
+                        placeholder="10"
+                        className="w-full mb-4 px-4 py-2 border rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-2 text-sm font-medium">Promotion Duration (days)</label>
+                      <input
+                        type="number"
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
+                        required
+                        placeholder="7"
+                        className="w-full mb-4 px-4 py-2 border rounded"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pt-4">

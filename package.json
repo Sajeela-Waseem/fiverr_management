@@ -16,6 +16,7 @@
     "@mui/material": "^6.3.0",
     "@mui/x-date-pickers": "^7.23.3",
     "dayjs": "^1.11.13",
+    "emailjs-com": "^3.2.0",
     "firebase": "^11.10.0",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.525.0",

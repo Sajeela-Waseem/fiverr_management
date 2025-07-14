@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
-import { signOut } from "firebase/auth";
-import emailjs from "@emailjs/browser";
-import service1 from "../Images/1.webp";
-import service2 from "../Images/2.webp";
-import service3 from "../Images/3.webp";
-import service4 from "../Images/4.webp";
+// import emailjs from "@emailjs/browser";
 import services1 from "../Images/services1.webp";
 import services2 from "../Images/services2.webp";
 import services3 from "../Images/services3.webp";
@@ -15,7 +10,6 @@ import services5 from "../Images/services5.webp";
 import herosection from "../Images/hero section.webp";
 import fiverr from "../Images/fiverr.webp";
 import profile from "../Images/profile.webp";
-import { Star } from "lucide-react";
 import bg from "../Images/bg.mp4";
 import freelancer from "../Images/freelancer.webp";
 import fiverrDeal from "../Images/buyersec.webp";
@@ -24,16 +18,12 @@ import { motion } from "framer-motion";
 import Footer from '../components/footer';
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import emailjs from "emailjs-com";
+import CategoryFilter from "../components/CategoryFilter";
 
+const Buyer = () => {
 
-
-    // Sample freelancer images
-
- 
-  const Buyer = () => {
-
- const [promotedGigs, setPromotedGigs] = useState([]);
-
+const [promotedGigs, setPromotedGigs] = useState([]);
 useEffect(() => {
   const fetchPromotedGigs = async () => {
     const snapshot = await getDocs(collection(db, "promotedGigs"));
@@ -71,51 +61,87 @@ useEffect(() => {
     return () => unsubscribe();
   }, []);
 
-  const handleLogout = () => {
-    signOut(auth).then(() => {
-      navigate("/signup");
-    });
-  };
+ 
+// 🔐 EmailJS configuration
+const SERVICE_ID = "service_bi2xmdb";
+const TEMPLATE_ID = "template_d5k9y4k";
+const PUBLIC_KEY = "j8VnXuRx-HiUjs4h1";
+
+// 🔢 Coupon Generator
 const generateCouponCode = () => {
   const prefix = "FVR";
   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
   return `${prefix}-${random}`;
 };
- 
- const sendCouponEmail = async (sellerEmail) => {
-  if (!user || !user.email) {
-    alert("User not logged in.");
-    return;
-  }
+
+// 📧 Send coupon code to both buyer and seller
+const sendCouponEmail = async (couponData) => {
+  const {
+    gigTitle,
+    discount,
+    gigLink,
+    sellerEmail,
+    buyerEmail
+  } = couponData;
 
   const couponCode = generateCouponCode();
 
-  try {
-    await Promise.all([
-      emailjs.send("service_id", "template_id", {
-        user_email: user.email,
-        coupon_code: couponCode,
-      }, "public_key"),
-      emailjs.send("service_id", "template_id", {
-        user_email: sellerEmail,
-        coupon_code: couponCode,
-      }, "public_key")
-    ]);
+  const templateParams = {
+    gig_title: gigTitle || "Fiverr Gig",
+    discount: discount || "0",
+    coupon: couponCode,
+    buyer_email: buyerEmail,
+    seller_email: sellerEmail,
+    gig_link: gigLink
+  };
 
-    alert("Coupon Code sent to you and seller!");
-  } catch (err) {
-    console.error("Error sending email:", err);
+  try {
+    // Send to buyer
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+
+    // Send to seller
+    await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY);
+
+    alert("Coupon code sent to both buyer and seller!");
+  } catch (error) {
+    console.error("Email send error:", error);
     alert("Failed to send coupon.");
   }
 };
 
+// 🧠 Handler: When Buyer Clicks "Get Coupon"
+const handleGetCoupon = (gig) => {
+  const userEmail = auth.currentUser?.email;
 
-  const services = [
-    { title: "Service 1", image: service1, price: "From PKR 35,214", rating: 5.0, reviews: 44,  link: "https://www.fiverr.com/shopify_manir/build-wordpress-website-development-redesign-wordpress-using-elementor-pro?context_referrer=search_gigs&source=top-bar&ref_ctx_id=c1512595f15943afa59d1f2b651355b1&pckg_id=1&pos=1&context_type=auto&funnel=c1512595f15943afa59d1f2b651355b1&seller_online=true&fiverr_choice=true&imp_id=1af4e1d2-2ba1-4365-be87-71ca94659bdd" },
-    { title: "Service 2", image: service2, price: "From PKR 14,673", rating: 5.0, reviews: 13, link: "https://www.fiverr.com/shopify_manir/build-wordpress-website-development-redesign-wordpress-using-elementor-pro?context_referrer=search_gigs&source=top-bar&ref_ctx_id=c1512595f15943afa59d1f2b651355b1&pckg_id=1&pos=1&context_type=auto&funnel=c1512595f15943afa59d1f2b651355b1&seller_online=true&fiverr_choice=true&imp_id=1af4e1d2-2ba1-4365-be87-71ca94659bdd" },
-    { title: "Service 3", image: service3, price: "From PKR 21,214", rating: 5.0, reviews: 34, link: "https://www.fiverr.com/shopify_manir/build-wordpress-website-development-redesign-wordpress-using-elementor-pro?context_referrer=search_gigs&source=top-bar&ref_ctx_id=c1512595f15943afa59d1f2b651355b1&pckg_id=1&pos=1&context_type=auto&funnel=c1512595f15943afa59d1f2b651355b1&seller_online=true&fiverr_choice=true&imp_id=1af4e1d2-2ba1-4365-be87-71ca94659bdd" },
-    { title: "Service 4", image: service4, price: "From PKR 29,214", rating: 4.8, reviews: 126,link: "https://www.fiverr.com/shopify_manir/build-wordpress-website-development-redesign-wordpress-using-elementor-pro?context_referrer=search_gigs&source=top-bar&ref_ctx_id=c1512595f15943afa59d1f2b651355b1&pckg_id=1&pos=1&context_type=auto&funnel=c1512595f15943afa59d1f2b651355b1&seller_online=true&fiverr_choice=true&imp_id=1af4e1d2-2ba1-4365-be87-71ca94659bdd" },
-  ];
+  if (!userEmail) {
+    alert("Please log in to receive your coupon.");
+    return;
+  }
+
+  const templateParams = {
+    user_email: userEmail,
+    gig_title: gig?.gigTitle || "Fiverr Gig",
+    discount: gig?.discount || "0",
+    coupon: gig?.couponCode || generateCouponCode(),
+    gig_link: gig?.gigLink || "#",
+    name: "Fiverr Deals Bot", // Optional
+    email: userEmail           // Optional (used in reply_to)
+  };
+
+  emailjs
+    .send("service_bi2xmdb", "template_d5k9y4k", templateParams, "j8VnXuRx-HiUjs4h1")
+    .then(() => {
+      alert("🎉 Coupon sent to your email!");
+    })
+    .catch((error) => {
+      console.error("Email send error:", error);
+      alert("Failed to send coupon. Please try again.");
+    });
+};
+
+
+
+ 
 const [count, setCount] = useState(0);
 
   // Animate number from 0 to 128000
@@ -179,11 +205,21 @@ useEffect(() => {
 
   fetchGigs();
 }, []);
-  return (
 
-    <>
+const [selectedCategory, setSelectedCategory] = useState("");
+
+return (
+<>
       {/* Navbar */}
      <Navbar user={user} />
+      <div className="px-4 py-2">
+      
+      <CategoryFilter
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
+    
+      </div>
  <section className="relative bg-green-950 text-white py-28 px-4 sm:px-8 lg:px-16 overflow-hidden text-center">
   {/* Background Image with Overlay */}
   <div className="absolute inset-0">
@@ -223,10 +259,10 @@ useEffect(() => {
     </div>
      
     <button
-  onClick={() => sendCouponEmail(service.sellerEmail)}
+
   className="mt-4 bg-green-800 text-white py-2 px-4 rounded hover:bg-green-700 transition "
 >
-  Get a Coupon Code
+  Contact us
 </button>
   </motion.div>
 </section>
@@ -313,6 +349,9 @@ useEffect(() => {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.98 }}
           className="w-56 cursor-pointer transition-all duration-300"
+          onClick={() =>
+            navigate(`/search?category=${encodeURIComponent(category.title)}`)
+          } // ✅ 2. Navigate on click
         >
           <div className="w-full overflow-hidden rounded-xl mb-4">
             <img
@@ -339,33 +378,63 @@ useEffect(() => {
     </div>
   </div>
 </section>
-
 {/* Fiverr Section */}
-      <section className="py-10 px-10 text-center bg-white">
-        <h2 className="text-3xl font-bold mb-2">Latest Services</h2>
-        <p className="text-gray-600 mb-8">
-          Explore the best services that suit you & Get a discount on Fiverr.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-   {gigs.map((gig, index) => (
-  <div key={index} className="gig-card">
-    <img src={gig.gigImage} alt={gig.gigTitle} className="w-full h-40 object-cover" />
-    <h2 className="text-lg font-bold mt-2">{gig.gigTitle}</h2>
-    <p className="text-green-700">Discount: {gig.discount}%</p>
-    <a
-      href={gig.gigLink}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block mt-2 bg-green-700 text-white text-center py-2 rounded"
+  <section className="py-10 px-10 text-center bg-white">
+  <h2 className="text-3xl font-bold mb-2">Latest Services</h2>
+  <p className="text-gray-600 mb-8">
+    Explore the best services that suit you & Get a discount on Fiverr.
+  </p>
+
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  {gigs.map((gig, index) => (
+    <div
+      key={index}
+      className="relative bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:scale-105 flex flex-col"
     >
-      Get a Coupon Code
-    </a>
-  </div>
-))}
+      {/* Discount Badge */}
+      <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+        -{gig.discount}%
+      </div>
 
+      {/* Image */}
+      <a href={gig.gigLink} target="_blank" rel="noopener noreferrer">
+        <img
+          src={gig.gigImage}
+          alt={gig.gigTitle}
+          className="w-full h-40 object-cover"
+        />
+      </a>
 
+      {/* Content */}
+      <div className="p-4 flex flex-col flex-grow">
+        <a
+          href={gig.gigLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-md font-semibold text-gray-800 hover:underline mb-4"
+        >
+          {gig.gigTitle}
+        </a>
+         <p className="text-sm text-gray-500">
+  {gig.category} / {gig.subcategory || "No subcategory"}
+</p>
+
+        <div className="mt-auto">
+          <button
+            onClick={() => handleGetCoupon(gig)}
+            className="w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium py-2 px-4 rounded transition-colors"
+          >
+            Get a Coupon Code
+          </button>
         </div>
-      </section>
+      </div>
+    </div>
+  ))}
+</div>
+
+
+</section>
+
 
     <section className="bg-green-50 py-10 px-10 md:px-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
