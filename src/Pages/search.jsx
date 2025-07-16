@@ -4,7 +4,8 @@ import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import CategoryFilter from "../components/CategoryFilter";
 import Navbar from "../components/Navbar";
-import { Search as SearchIcon } from "lucide-react";
+import emailjs from "emailjs-com";
+
 
 const Search = () => {
   const location = useLocation();
@@ -66,11 +67,49 @@ const Search = () => {
     }
   };
 
+   const SERVICE_ID = "service_bi2xmdb";
+  const TEMPLATE_ID = "template_d5k9y4k";
+  const PUBLIC_KEY = "j8VnXuRx-HiUjs4h1";
+  
+  const generateCouponCode = () => {
+      const prefix = "FVR";
+      const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+      return `${prefix}-${random}`;
+    };
+  
+    const handleGetCoupon = (gig) => {
+      const userEmail = auth.currentUser?.email;
+      if (!userEmail) {
+        alert("Please log in to receive your coupon.");
+        return;
+      }
+  
+      const templateParams = {
+        user_email: userEmail,
+        gig_title: gig?.gigTitle || "Fiverr Gig",
+        discount: gig?.discount || "0",
+        coupon: gig?.couponCode || generateCouponCode(),
+        gig_link: gig?.gigLink || "#",
+        name: "Fiverr Deals Bot",
+        email: userEmail,
+      };
+  
+      emailjs
+        .send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
+        .then(() => {
+          alert("🎉 Coupon sent to your email!");
+        })
+        .catch((error) => {
+          console.error("Email send error:", error);
+          alert("Failed to send coupon. Please try again.");
+        });
+    };
+
   return (
     <>
       <Navbar user={user} />
 
-      <div className="px-4 py-2">
+      <div className="">
       
       <CategoryFilter
             selectedCategory={selectedCategory}
@@ -91,30 +130,41 @@ const Search = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
             {filteredGigs.map((gig, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-lg shadow-md border overflow-hidden"
-              >
-                <a
-                  href={gig.gigLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src={gig.gigImage}
-                    alt={gig.gigTitle}
-                    className="w-full h-48 object-cover"
-                  />
-                </a>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg text-gray-800 mb-2">
-                    {gig.gigTitle}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {gig.category} / {gig.subcategory || "N/A"}
-                  </p>
-                </div>
-              </div>
+             <div
+  key={idx}
+  className="bg-white rounded-lg shadow-md border overflow-hidden flex flex-col"
+>
+  <a
+    href={gig.gigLink}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <img
+      src={gig.gigImage}
+      alt={gig.gigTitle}
+      className="w-full h-48 object-cover"
+    />
+  </a>
+
+  <div className="p-4 flex flex-col flex-grow justify-between">
+    <div>
+      <h3 className="font-bold text-lg text-gray-800 mb-2">
+        {gig.gigTitle}
+      </h3>
+      <p className="text-sm text-gray-500 mb-4">
+        {gig.category} / {gig.subcategory || "N/A"}
+      </p>
+    </div>
+
+    <button
+      onClick={() => handleGetCoupon(gig)}
+      className="w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium py-2 px-4 rounded transition-colors mt-auto"
+    >
+      Get a Coupon Code
+    </button>
+  </div>
+</div>
+
             ))}
           </div>
         )}

@@ -6,8 +6,9 @@ import seller from "../Images/seller.mp4";
 import form from "../Images/seller.jpg";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, setDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import { getDoc } from "firebase/firestore";
 
 
 const Seller = () => {
@@ -22,59 +23,83 @@ const Seller = () => {
   const [gigTitle, setGigTitle] = useState("");
   const [gigImage, setGigImage] = useState("");
   const navigate = useNavigate();
+  const [profileData, setProfileData] = useState(null);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-      } else {
-        navigate("/signup");
+ useEffect(() => {
+  const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+    if (currentUser) {
+      setUser(currentUser);
+
+      // 🔥 Fetch user profile data from Firestore (e.g., profile image, name)
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      if (userDoc.exists()) {
+        setProfileData(userDoc.data());
       }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
-
-  const handlePromoteSubmit = async (e) => {
-    e.preventDefault();
-    if (!user) {
-      alert("User not logged in.");
-      return;
+    } else {
+      navigate("/signup");
     }
+  });
 
-    const normalizedLink = gigLink.startsWith("http")
-      ? gigLink
-      : `https://www.fiverr.com/${gigLink}`;
+  return () => unsubscribe();
+}, [navigate]);
 
-    try {
-      await addDoc(collection(db, "promotedGigs"), {
-        gigLink: normalizedLink,
-        gigTitle,
-        gigImage,
-        category,
-        subcategory,
-        tags: tags.split(",").map(tag => tag.trim().toLowerCase()),
-        discount,
-        duration,
-        couponCode: generateCoupon(),
-        sellerEmail: user.email,
-        createdAt: serverTimestamp(),
-      });
 
-      alert("Promotion submitted!");
-      setGigLink("");
-      setDiscount("");
-      setDuration("");
-      setGigTitle("");
-      setGigImage("");
-      setCategory("");
-      setSubcategory("");
-      setTags("");
-      setShowForm(false);
-    } catch (error) {
-      console.error("❌ Firestore error:", error);
-      alert("Failed to submit promotion.");
-    }
-  };
+ const handlePromoteSubmit = async (e) => {
+  e.preventDefault();
+  if (!user) {
+    alert("User not logged in.");
+    return;
+  }
+
+  const normalizedLink = gigLink.startsWith("http")
+    ? gigLink
+    : `https://www.fiverr.com/${gigLink}`;
+
+  try {
+    // 🔍 Get user profile from Firestore
+    const profileRef = doc(db, "users", user.uid);
+    const profileSnap = await getDoc(profileRef);
+
+    const profileData = profileSnap.exists() ? profileSnap.data() : {};
+
+ const docRef = await addDoc(collection(db, "promotedGigs"), {
+  gigLink: normalizedLink,
+  gigTitle,
+  gigImage,
+  category,
+  subcategory,
+  tags: tags.split(",").map(tag => tag.trim().toLowerCase()),
+  discount,
+  duration,
+  couponCode: generateCoupon(),
+  sellerUid: user.uid,
+  sellerEmail: user.email,
+ sellerName: profileData?.name || "Seller",
+sellerImage: profileData?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(profileData?.name || "Seller")}`
+,
+  createdAt: serverTimestamp()
+});
+
+
+
+    await setDoc(doc(db, "promotedGigs", docRef.id), { id: docRef.id }, { merge: true });
+
+    alert("Promotion submitted!");
+    setGigLink("");
+    setDiscount("");
+    setDuration("");
+    setGigTitle("");
+    setGigImage("");
+    setCategory("");
+    setSubcategory("");
+    setTags("");
+    setShowForm(false);
+  } catch (error) {
+    console.error("❌ Firestore error:", error);
+    alert("Failed to submit promotion.");
+  }
+};
+
 
   const generateCoupon = () => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

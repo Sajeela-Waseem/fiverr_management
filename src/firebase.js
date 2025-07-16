@@ -1,7 +1,8 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore"; // 
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage"; // ✅ added
 
 const firebaseConfig = {
   apiKey: "AIzaSyBfqkLLys811x-OFnZOSjtZYfI69FpvBBw",
@@ -15,9 +16,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// ✅ Auth
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
-
-// ✅ Firestore
-export const db = getFirestore(app); // 🔥 Add this line to fix the error
+export const db = getFirestore(app);
+export const storage = getStorage(app); // ✅ make sure this is here
