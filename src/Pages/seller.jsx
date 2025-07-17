@@ -19,6 +19,8 @@ const Seller = () => {
   const [duration, setDuration] = useState("");
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
+  const [profileIncomplete, setProfileIncomplete] = useState(false);
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
