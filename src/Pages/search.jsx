@@ -34,20 +34,27 @@ const Search = () => {
       const snapshot = await getDocs(collection(db, "promotedGigs"));
       const gigs = snapshot.docs.map((doc) => doc.data());
 
-      const filtered = gigs.filter((gig) => {
-        const gigCat = gig.category?.toLowerCase().trim();
-        const gigSub = gig.subcategory?.toLowerCase().trim();
-        const gigTitle = gig.gigTitle?.toLowerCase() || "";
-        const gigTags = gig.tags?.map((t) => t.toLowerCase().trim()) || [];
+     const filtered = gigs.filter((gig) => {
+  const gigCat = gig.category?.toLowerCase().trim() || "";
+  const gigSub = gig.subcategory?.toLowerCase().trim() || "";
+  const gigTitle = gig.gigTitle?.toLowerCase() || "";
 
-        const matchCat = category ? gigCat?.includes(category) : true;
-        const matchSub = subcategory ? gigSub?.includes(subcategory) : true;
-        const matchTag = tag
-          ? gigTitle.includes(tag) || gigTags.includes(tag)
-          : true;
+  // Normalize tags safely (array or string)
+  const gigTags = Array.isArray(gig.tags)
+    ? gig.tags.map((t) => t.toLowerCase().trim())
+    : gig.tags
+    ? gig.tags.toString().split(",").map((t) => t.toLowerCase().trim())
+    : [];
 
-        return matchCat && matchSub && matchTag;
-      });
+  const matchCat = category ? gigCat.includes(category.toLowerCase()) : true;
+  const matchSub = subcategory ? gigSub.includes(subcategory.toLowerCase()) : true;
+  const matchTag = tag
+    ? gigTitle.includes(tag.toLowerCase()) || gigTags.includes(tag.toLowerCase())
+    : true;
+
+  return matchCat && matchSub && matchTag;
+});
+
 
       setFilteredGigs(filtered);
     };

@@ -48,10 +48,11 @@ const profileRef = doc(db, "users", user.uid);
 const profileSnap = await getDoc(profileRef);
 const profileData = profileSnap.exists() ? profileSnap.data() : {};
 
-if (!profileData.name || !profileData.profileImage) {
+if (!profileData.name) {
   setProfileIncomplete(true);
   return;
 }
+
 
 
  const normalizedLink = gigLink.startsWith("http")
@@ -194,9 +195,9 @@ if (!profileData.name || !profileData.profileImage) {
         <button
           onClick={() => {
             setProfileIncomplete(false);
-            navigate("/sellerprofile");
+            navigate("/seller/profile");
           }}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-600"
         >
           Go to Profile
         </button>
