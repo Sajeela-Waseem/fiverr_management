@@ -1,99 +1,44 @@
 import React from "react";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {
-  const footerLinks = {
-    Categories: [
-      "Graphics & Design",
-      "Digital Marketing",
-      "Writing & Translation",
-      "Video & Animation",
-      "Music & Audio",
-      "Programming & Tech",
-      "AI Services",
-      "Consulting",
-      "Data",
-      "Business",
-      "Personal Growth & Hobbies",
-      "Photography",
-      "Finance",
-      "End-to-End Projects",
-      "Service Catalog",
-    ],
-    "For Clients": [
-      "How Fiverr Works",
-      "Customer Success Stories",
-      "Trust & Safety",
-      "Quality Guide",
-      "Fiverr Learn – Online Courses",
-      "Fiverr Guides",
-      "Fiverr Answers",
-    ],
-    "For Freelancers": [
-      "Become a Fiverr Freelancer",
-      "Become an Agency",
-      "Freelancer Equity Program",
-      "Community Hub",
-      "Forum",
-      "Events",
-    ],
-    "Business Solutions": [
-      "Fiverr Pro",
-      "Project Management Service",
-      "Expert Sourcing Service",
-      "ClearVoice – Content Marketing",
-      "Working Not Working – Creative Talent",
-      "AutoDS – Dropshipping Tool",
-      "AI store builder",
-      "Fiverr Logo Maker",
-      "Contact Sales",
-      "Fiverr Go",
-    ],
-    Company: [
-      "About Fiverr",
-      "Help & Support",
-      "Social Impact",
-      "Careers",
-      "Terms of Service",
-      "Privacy Policy",
-      "Do not sell or share my personal information",
-      "Partnerships",
-      "Creator Network",
-      "Affiliates",
-      "Invite a Friend",
-      "Press & News",
-      "Investor Relations",
-    ],
-  };
-
   return (
-    <footer className="bg-white border-t text-sm text-gray-700">
-      <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-        {Object.entries(footerLinks).map(([title, links]) => (
-          <div key={title}>
-            <h3 className="font-semibold mb-3">{title}</h3>
-            <ul className="space-y-2">
-              {links.map((link, i) => (
-                <li key={i} className="hover:underline cursor-pointer">
-                  {link}
-                </li>
-              ))}
-            </ul>
+    <footer className="bg-[#0c0c0c] text-white py-10">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-[2fr_1.2fr_1fr] gap-6 md:gap-10 items-start text-sm">
+        
+        {/* About Us */}
+        <div>
+          <h3 className="text-[#1dbf73] font-semibold text-base mb-2">About Us</h3>
+          <p className="text-gray-300 leading-relaxed">
+            At Fiverr management’s platform, we connect talented freelancers with
+            ambitious clients across the globe. Our mission is to enable growth
+            through trusted digital services and world-class collaboration.
+          </p>
+        </div>
+
+        {/* Contact Info */}
+        <div className="space-y-1">
+          <h3 className="text-[#1dbf73] font-semibold text-base mb-2">Contact</h3>
+          <p className="text-gray-300">Email: sajeela@example.com</p>
+          <p className="text-gray-300">Phone: +1 (123) 456-7890</p>
+          <p className="text-gray-300">Lahore, Pakistan</p>
+        </div>
+
+        {/* Social Media */}
+        <div>
+          <h3 className="text-[#1dbf73] font-semibold text-base mb-2">Follow Us</h3>
+          <div className="flex space-x-4 text-lg mt-2">
+            <a href="#" className="text-gray-300 hover:text-[#1dbf73] transition"><FaFacebookF /></a>
+            <a href="#" className="text-gray-300 hover:text-[#1dbf73] transition"><FaInstagram /></a>
+            <a href="#" className="text-gray-300 hover:text-[#1dbf73] transition"><FaLinkedinIn /></a>
+            <a href="#" className="text-gray-300 hover:text-[#1dbf73] transition"><FaTwitter /></a>
           </div>
-        ))}
+        </div>
       </div>
 
-      <div className="border-t py-4 px-4 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 max-w-7xl mx-auto">
-        <div className="mb-2 md:mb-0">© Fiverr International Ltd. 2025</div>
-        <div className="flex gap-3 text-gray-600 text-xl">
-          {/* Replace with icons or images as needed */}
-          <i className="fab fa-tiktok" />
-          <i className="fab fa-instagram" />
-          <i className="fab fa-linkedin" />
-          <i className="fab fa-facebook" />
-          <i className="fab fa-pinterest" />
-          <i className="fab fa-x-twitter" />
-          <i className="fab fa-apple" />
-        </div>
+      {/* Copyright */}
+      <div className="border-t border-gray-800 mt-10 pt-4 text-center text-xs text-gray-400">
+        © {new Date().getFullYear()} All rights reserved by <span className="text-white font-semibold">Sajeela Waseem</span>.
       </div>
     </footer>
   );

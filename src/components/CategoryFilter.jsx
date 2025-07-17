@@ -79,7 +79,7 @@ const CategoryFilter = ({ selectedCategory, setSelectedCategory }) => {
             </button>
 
             {/* Dropdown menu */}
-            <div className="absolute left-0 top-full mt-2 hidden group-hover:block z-50 bg-white border rounded shadow-md min-w-[180px]">
+            <div className="absolute left-0 top-full  hidden group-hover:block z-50 bg-white border rounded shadow-md min-w-[180px]">
               {cat.sub.map((subItem) => (
                 <button
                   key={subItem}
@@ -91,7 +91,7 @@ const CategoryFilter = ({ selectedCategory, setSelectedCategory }) => {
                       )}&subcategory=${encodeURIComponent(subItem)}`
                     );
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="block w-full text-left px-4 py-2 text-[12px] text-gray-700 hover:bg-gray-100"
                 >
                   {subItem}
                 </button>

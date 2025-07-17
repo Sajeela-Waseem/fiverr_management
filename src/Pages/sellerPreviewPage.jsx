@@ -11,6 +11,8 @@ import {
 } from "firebase/firestore";
 import { BuyerNavbar } from "../components/Navbar";
 import CategoryFilter from "../components/CategoryFilter";
+import Footer from "../components/footer";
+
 
 const SellerPreviewPage = () => {
   const { uid } = useParams();
@@ -192,6 +194,7 @@ const SellerPreviewPage = () => {
           )}
         </div>
       </div>
+       <Footer />
     </>
   );
 };

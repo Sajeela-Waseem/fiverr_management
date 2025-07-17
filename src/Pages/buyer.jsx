@@ -10,11 +10,11 @@ import { db } from "../firebase";
 import emailjs from "emailjs-com";
 import CategoryFilter from "../components/CategoryFilter";
 import { Link } from "react-router-dom";
+import { query, where } from "firebase/firestore";
 
 
 const Buyer = () => {
-  const [promotedGigs, setPromotedGigs] = useState([]);
-  const navigate = useNavigate();
+    const navigate = useNavigate();
   const [user, setUser] = useState(null);
    const [selectedCategory, setSelectedCategory] = useState("");
   
@@ -37,8 +37,20 @@ const Buyer = () => {
   useEffect(() => {
     const fetchGigs = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "promotedGigs"));
-        const gigsData = querySnapshot.docs.map((doc) => doc.data());
+       useEffect(() => {
+  const fetchApprovedGigs = async () => {
+    const q = query(collection(db, "promotedGigs"), where("status", "==", "approved"));
+    const querySnapshot = await getDocs(q);
+    const gigsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setGigs(gigsData);
+  };
+
+   
+
+
+  fetchApprovedGigs();
+}, []);
+
         setGigs(gigsData);
       } catch (error) {
         console.error("Error fetching gigs:", error);
@@ -47,6 +59,19 @@ const Buyer = () => {
 
     fetchGigs();
   }, []);
+
+
+useEffect(() => {
+  const fetchApprovedGigs = async () => {
+    const q = query(collection(db, "promotedGigs"), where("status", "==", "approved"));
+    const querySnapshot = await getDocs(q);
+    const gigsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setGigs(gigsData);
+  };
+
+  fetchApprovedGigs();
+}, []);
+
 
 const fallbackImg = "https://ui-avatars.com/api/?name=Seller";
 

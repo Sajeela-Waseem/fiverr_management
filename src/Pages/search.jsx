@@ -5,6 +5,7 @@ import { db, auth } from "../firebase";
 import CategoryFilter from "../components/CategoryFilter";
 import Navbar from "../components/Navbar";
 import emailjs from "emailjs-com";
+import Footer from "../components/footer";
 
 
 const Search = () => {
@@ -119,7 +120,7 @@ const Search = () => {
       </div>
 
       <div className=" bg-white min-h-screen">
-        <h1 className="text-3xl font-bold mb-6 text-center text-white bg-green-900 p-4">
+        <h1 className="text-3xl font-bold mb-6 text-center text-white bg-green-700 p-4">
           Search Result: {category || "All"}
           {subcategory && ` / ${subcategory}`}
           {tag && ` / ${tag}`}
@@ -169,6 +170,7 @@ const Search = () => {
           </div>
         )}
       </div>
+       <Footer />
     </>
   );
 };

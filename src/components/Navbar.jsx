@@ -84,7 +84,7 @@ export const BuyerNavbar = ({ user }) => {
     <nav className="bg-white shadow-md py-3 px-6 flex justify-between items-center sticky top-0 z-50">
       {/* Logo */}
       <div className="text-green-600 font-extrabold text-2xl cursor-pointer" onClick={() => navigate("/")}>
-        fiverr<sup className="text-xs text-gray-500 font-normal ml-1">®</sup>
+        Fiverr<sup className="text-xs text-gray-500 font-normal ml-1">®</sup>
       </div>
 
       {/* Search */}

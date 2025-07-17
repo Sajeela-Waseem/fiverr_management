@@ -13,6 +13,8 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { Pencil } from "lucide-react";
+import Footer from "../components/footer";
+
 
 
 
@@ -105,7 +107,7 @@ const ProfilePage = () => {
     <>
        <Navbar user={user} />
        
-      <div className="max-w-5xl mx-auto mt-10 bg-white shadow-md rounded-lg p-8">
+      <div className="max-w-5xl mx-auto mt-10 mb-10 bg-white shadow-md rounded-lg p-8">
       <div className="flex items-center gap-6">
     <div className="relative w-28 h-28">
   <div className="w-full h-full rounded-full overflow-hidden">
@@ -196,6 +198,7 @@ const ProfilePage = () => {
 </div>
 
     </div>
+    <Footer/>
     </>
   
   );
