@@ -62,10 +62,16 @@ const ProfilePage = () => {
   }, []);
 
   const fetchGigs = async (email) => {
-    const q = query(collection(db, "promotedGigs"), where("sellerEmail", "==", email));
-    const snap = await getDocs(q);
-    setGigs(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-  };
+  const q = query(collection(db, "promotedGigs"), where("sellerEmail", "==", email));
+  const snap = await getDocs(q);
+  const allGigs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+  // ❌ Filter out rejected gigs
+  const nonRejectedGigs = allGigs.filter((gig) => gig.status !== "rejected");
+
+  setGigs(nonRejectedGigs);
+};
+
 
   const loadProfileData = async (uid) => {
     const docRef = doc(db, "users", uid);

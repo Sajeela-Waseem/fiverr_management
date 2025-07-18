@@ -34,12 +34,13 @@ const Search = () => {
       const snapshot = await getDocs(collection(db, "promotedGigs"));
       const gigs = snapshot.docs.map((doc) => doc.data());
 
-     const filtered = gigs.filter((gig) => {
+   const filtered = gigs.filter((gig) => {
+  if (gig.status === "rejected") return false;
+
   const gigCat = gig.category?.toLowerCase().trim() || "";
   const gigSub = gig.subcategory?.toLowerCase().trim() || "";
   const gigTitle = gig.gigTitle?.toLowerCase() || "";
 
-  // Normalize tags safely (array or string)
   const gigTags = Array.isArray(gig.tags)
     ? gig.tags.map((t) => t.toLowerCase().trim())
     : gig.tags
@@ -142,11 +143,12 @@ const Search = () => {
   key={idx}
   className="bg-white rounded-lg shadow-md border overflow-hidden flex flex-col"
 >
-  <a
-    href={gig.gigLink}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
+ <a
+  href={gig.affiliateLink || gig.gigLink}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+
     <img
       src={gig.gigImage}
       alt={gig.gigTitle}

@@ -193,7 +193,7 @@ const fallbackImg = "https://ui-avatars.com/api/?name=Seller";
   
   </div>
 </div>
-                <a href={gig.gigLink} target="_blank" rel="noopener noreferrer" className="text-md text-start font-semibold text-gray-800 hover:underline mb-2">
+                <a  href={gig.affiliateLink || gig.gigLink} target="_blank" rel="noopener noreferrer" className="text-md text-start font-semibold text-gray-800 hover:underline mb-2">
                   {gig.gigTitle}
                 </a>
                 <p className="text-start text-sm text-gray-500">{gig.category} / {gig.subcategory || "No subcategory"}</p>
