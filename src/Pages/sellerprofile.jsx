@@ -11,6 +11,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { Pencil } from "lucide-react";
 import Footer from "../components/footer";
@@ -61,16 +62,44 @@ const ProfilePage = () => {
     return unsub;
   }, []);
 
-  const fetchGigs = async (email) => {
+ const handleToggleVisibility = async (gigId, currentVisible) => {
+  try {
+    const gigRef = doc(db, "promotedGigs", gigId);
+    await updateDoc(gigRef, { visible: !currentVisible });
+    setGigs((prev) =>
+      prev.map((gig) =>
+        gig.id === gigId ? { ...gig, visible: !currentVisible } : gig
+      )
+    );
+  } catch (error) {
+    console.error("Visibility toggle failed", error);
+    alert("Failed to update visibility.");
+  }
+};
+
+
+const fetchGigs = async (email) => {
   const q = query(collection(db, "promotedGigs"), where("sellerEmail", "==", email));
   const snap = await getDocs(q);
   const allGigs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-  // ❌ Filter out rejected gigs
-  const nonRejectedGigs = allGigs.filter((gig) => gig.status !== "rejected");
+  // Ensure all gigs have a visible flag set
+  await Promise.all(
+    allGigs.map(async (g) => {
+      if (g.visible === undefined) {
+        await updateDoc(doc(db, "promotedGigs", g.id), { visible: true });
+        g.visible = true;
+      }
+    })
+  );
 
-  setGigs(nonRejectedGigs);
+  // ✅ Show only approved gigs
+  const approvedGigs = allGigs.filter((gig) => gig.status === "approved");
+
+  setGigs(approvedGigs);
 };
+
+
 
 
   const loadProfileData = async (uid) => {
@@ -153,8 +182,7 @@ const ProfilePage = () => {
   return (
     <>
       <Navbar user={user} />
-
-      <div className="max-w-5xl mx-auto mt-10 mb-10 bg-white shadow-md rounded-lg p-8">
+ <div className="max-w-5xl mx-auto mt-10 mb-10 bg-white shadow-md rounded-lg p-8">
         {/* Profile Header */}
         <div className="flex items-center gap-6">
           <div className="relative w-28 h-28">
@@ -213,87 +241,110 @@ const ProfilePage = () => {
 
         {/* Gigs */}
         <div className="mt-10">
-          <h3 className="text-lg font-semibold mb-4">Promoted Gigs</h3>
-          {gigs.length === 0 ? (
-            <p className="text-gray-500">No gigs promoted yet.</p>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {gigs.map((gig) => {
-                const isEditing = editingGigs[gig.id];
-                return (
-                  <div key={gig.id} className="border rounded-lg p-4 shadow-sm hover:shadow-md">
-                    <a href={gig.gigLink} target="_blank" rel="noopener noreferrer">
-                      <img
-                        src={gig.gigImage}
-                        alt={gig.gigTitle}
-                        className="w-full h-36 object-cover rounded"
-                      />
-                      <h4 className="mt-2 font-semibold text-gray-800 hover:underline">
-                        {gig.gigTitle}
-                      </h4>
-                    </a>
-                    <p className="text-sm text-gray-500 mt-1">
-                      🔖 {gig.category} • {gig.subcategory}
-                    </p>
+  <h3 className="text-lg font-semibold mb-4">Promoted Gigs</h3>
+  {gigs.length === 0 ? (
+    <p className="text-gray-500">No gigs promoted yet.</p>
+  ) : (
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {gigs.map((gig) => {
+        const isEditing = editingGigs[gig.id];
 
-                    {isEditing ? (
-                      <div className="mt-2 space-y-2">
-                        <div>
-                          <label className="text-sm font-medium">Discount (%)</label>
-                          <input
-                            type="number"
-                            value={isEditing.discount}
-                            onChange={(e) =>
-                              handleGigChange(gig.id, "discount", e.target.value)
-                            }
-                            className="w-full border px-2 py-1 rounded mt-1"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium">Duration (days)</label>
-                          <input
-                            type="number"
-                            value={isEditing.duration}
-                            onChange={(e) =>
-                              handleGigChange(gig.id, "duration", e.target.value)
-                            }
-                            className="w-full border px-2 py-1 rounded mt-1"
-                          />
-                        </div>
-                        <div className="flex justify-between mt-2">
-                          <button
-                            onClick={() => toggleEditGig(gig.id)}
-                            className="px-3 py-1 bg-gray-300 rounded text-sm"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => saveGigChanges(gig.id)}
-                            className="px-3 py-1 bg-green-600 text-white rounded text-sm"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <p className="text-sm mt-2">
-                          💸 <span className="text-green-600 font-medium">{gig.discount}% off</span> | ⏳ {gig.duration} days
-                        </p>
-                        <button
-                          onClick={() => toggleEditGig(gig.id, gig)}
-                          className="mt-2 text-sm text-indigo-600 hover:underline"
-                        >
-                          Edit
-                        </button>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        return (
+          <div key={gig.id} className="relative border rounded-lg p-4 shadow-sm hover:shadow-md">
+            <a href={gig.affiliateLink || gig.gigLink} target="_blank" rel="noopener noreferrer">
+              <img
+                src={gig.gigImage}
+                alt={gig.gigTitle}
+                className="w-full h-36 object-cover rounded"
+              />
+              <h4 className="mt-2 font-semibold text-gray-800 hover:underline">
+                {gig.gigTitle}
+              </h4>
+            </a>
+            <p className="text-sm text-gray-500 mt-1">
+              🔖 {gig.category} • {gig.subcategory}
+            </p>
+
+            {isEditing ? (
+              <div className="mt-2 space-y-2">
+                <div>
+                  <label className="text-sm font-medium">Discount (%)</label>
+                  <input
+                    type="number"
+                    value={isEditing.discount}
+                    onChange={(e) =>
+                      handleGigChange(gig.id, "discount", e.target.value)
+                    }
+                    className="w-full border px-2 py-1 rounded mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Duration (days)</label>
+                  <input
+                    type="number"
+                    value={isEditing.duration}
+                    onChange={(e) =>
+                      handleGigChange(gig.id, "duration", e.target.value)
+                    }
+                    className="w-full border px-2 py-1 rounded mt-1"
+                  />
+                </div>
+                <div className="flex justify-between mt-2">
+                  <button
+                    onClick={() => toggleEditGig(gig.id)}
+                    className="px-3 py-1 bg-gray-300 rounded text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => saveGigChanges(gig.id)}
+                    className="px-3 py-1 bg-green-600 text-white rounded text-sm"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm mt-2">
+                  💸 <span className="text-green-600 font-medium">{gig.discount}% off</span> | ⏳ {gig.duration} days
+                </p>
+                <button
+                  onClick={() => toggleEditGig(gig.id, gig)}
+                  className="absolute top-0 right-0 text-gray-500 hover:text-indigo-600"
+                  title="Edit"
+                >
+                  ✏️
+                </button>
+              </>
+            )}
+
+            {/* ✅ Always show visibility toggle */}
+   <div className="flex items-center justify-between mt-4">
+  <span className="text-sm font-medium text-gray-600">
+    {gig.visible !== false ? "✅ Active" : "🚫 Inactive"}
+  </span>
+
+  {/* Toggle Switch */}
+  <label className="inline-flex items-center cursor-pointer">
+    <input
+      type="checkbox"
+      checked={gig.visible !== false}
+      onChange={() => handleToggleVisibility(gig.id, gig.visible !== false)}
+      className="sr-only peer"
+    />
+    <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-600 relative transition-all">
+      <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-5" />
+    </div>
+  </label>
+</div>
+   </div>
+        );
+      })}
+    </div>
+  )}
+</div>
+
       </div>
       <Footer />
     </>

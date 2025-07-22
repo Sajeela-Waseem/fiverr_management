@@ -50,14 +50,22 @@ const SellerPreviewPage = () => {
   };
 
   const fetchSellerGigs = async () => {
-    try {
-      const q = query(collection(db, "promotedGigs"), where("sellerUid", "==", uid));
-      const snap = await getDocs(q);
-      setGigs(snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      console.error("Error fetching gigs:", error);
-    }
-  };
+  try {
+    const q = query(collection(db, "promotedGigs"), where("sellerUid", "==", uid));
+    const snap = await getDocs(q);
+    const allGigs = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    // Filter out rejected gigs
+    const visibleGigs = allGigs.filter(
+      (gig) => gig.status === "approved" && gig.visible !== false
+    );
+    
+
+    setGigs(visibleGigs);
+  } catch (error) {
+    console.error("Error fetching gigs:", error);
+  }
+};
 
   if (!profileInfo) return <div className="text-center mt-20">Loading seller profile...</div>;
 

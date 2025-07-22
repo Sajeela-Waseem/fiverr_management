@@ -158,9 +158,15 @@ const Search = () => {
 
   <div className="p-4 flex flex-col flex-grow justify-between">
     <div>
+      <a
+  href={gig.affiliateLink || gig.gigLink}
+  target="_blank"
+  rel="noopener noreferrer"
+>
       <h3 className="font-bold text-lg text-gray-800 mb-2">
         {gig.gigTitle}
       </h3>
+      </a>
       <p className="text-sm text-gray-500 mb-4">
         {gig.category} / {gig.subcategory || "N/A"}
       </p>

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
-import { signOut } from "firebase/auth";
 import seller from "../Images/seller.mp4";
 import form from "../Images/seller.jpg";
 import Navbar from "../components/Navbar";
@@ -10,6 +9,9 @@ import Footer from "../components/footer";
 import { collection, addDoc, serverTimestamp, setDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { getDoc } from "firebase/firestore";
+import { query, where, getDocs } from "firebase/firestore";
+
+
 
 const Seller = () => {
   const [user, setUser] = useState(null);
@@ -39,30 +41,40 @@ const Seller = () => {
 
   const handlePromoteSubmit = async (e) => {
     e.preventDefault();
-   if (!user) {
-  alert("User not logged in.");
-  return;
-}
-
-const profileRef = doc(db, "users", user.uid);
-const profileSnap = await getDoc(profileRef);
-const profileData = profileSnap.exists() ? profileSnap.data() : {};
-
-if (!profileData.name) {
-  setProfileIncomplete(true);
-  return;
-}
-
-
-
- const normalizedLink = gigLink.startsWith("http")
+  
+    if (!user) {
+      alert("User not logged in.");
+      return;
+    }
+  
+    // 🔍 Check seller's existing promoted gigs
+    const gigQuery = query(
+      collection(db, "promotedGigs"),
+      where("sellerUid", "==", user.uid),
+      where("status", "in", ["pending", "approved"])
+    );
+    const existingGigsSnap = await getDocs(gigQuery);
+    const gigCount = existingGigsSnap.size;
+  
+    if (gigCount >= 5) {
+      alert("⚠️ You can only promote 5 active gigs. Delete or wait for rejection to add more.");
+      return;
+    }
+  
+    const profileRef = doc(db, "users", user.uid);
+    const profileSnap = await getDoc(profileRef);
+    const profileData = profileSnap.exists() ? profileSnap.data() : {};
+  
+    if (!profileData.name) {
+      setProfileIncomplete(true);
+      return;
+    }
+  
+    const normalizedLink = gigLink.startsWith("http")
       ? gigLink
       : `https://www.fiverr.com/${gigLink}`;
+  
     try {
-      const profileRef = doc(db, "users", user.uid);
-      const profileSnap = await getDoc(profileRef);
-      const profileData = profileSnap.exists() ? profileSnap.data() : {};
-
       const docRef = await addDoc(collection(db, "promotedGigs"), {
         gigLink: normalizedLink,
         discount,
@@ -77,11 +89,11 @@ if (!profileData.name) {
             profileData?.name || "Seller"
           )}`,
         createdAt: serverTimestamp(),
-        status: "pending"
+        status: "pending",
       });
-
+  
       await setDoc(doc(db, "promotedGigs", docRef.id), { id: docRef.id }, { merge: true });
-
+  
       alert("✅ Promotion submitted! Please wait up to 24 hours for admin review.");
       setGigLink("");
       setDiscount("");
@@ -92,6 +104,7 @@ if (!profileData.name) {
       alert("Failed to submit promotion.");
     }
   };
+  
 
   const generateCoupon = () => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

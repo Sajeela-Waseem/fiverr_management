@@ -18,11 +18,44 @@ const Footer = () => {
 
         {/* Contact Info */}
         <div className="space-y-1">
-          <h3 className="text-[#1dbf73] font-semibold text-base mb-2">Contact</h3>
-          <p className="text-gray-300">Email: sajeela@example.com</p>
-          <p className="text-gray-300">Phone: +1 (123) 456-7890</p>
-          <p className="text-gray-300">Lahore, Pakistan</p>
-        </div>
+  <h3 className="text-[#1dbf73] font-semibold text-base mb-2">Customer Support</h3>
+
+  <p className="text-gray-300">
+    Email:{" "}
+    <a
+      href="https://mail.google.com/mail/?view=cm&fs=1&to=waseemsajeela123@gmail.com"
+      className="text-white hover:text-green-500 transition"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      waseemsajeela123@gmail.com
+    </a>
+  </p>
+
+  <p className="text-gray-300">
+    Phone:{" "}
+    <a
+      href="tel:+11234567890"
+      className="text-white hover:text-green-500 transition"
+    >
+      +1 (123) 456-7890
+    </a>
+  </p>
+
+  <p className="text-gray-300">
+    WhatsApp:{" "}
+    <a
+      href="https://wa.me/923116918845"
+      className="text-white hover:text-green-500 transition"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      0311-6918845
+    </a>
+  </p>
+</div>
+
+
 
         {/* Social Media */}
         <div>

@@ -13,12 +13,19 @@ import { Link } from "react-router-dom";
 import { query, where } from "firebase/firestore";
 
 
+
 const Buyer = () => {
     const navigate = useNavigate();
   const [user, setUser] = useState(null);
    const [selectedCategory, setSelectedCategory] = useState("");
   
   const [gigs, setGigs] = useState([]);
+
+const q = query(
+  collection(db, "promotedGigs"),
+  where("status", "==", "approved"),
+  where("visible", "==", true) // 🔥 only show visible gigs
+);
 
  
  
@@ -63,14 +70,27 @@ const Buyer = () => {
 
 useEffect(() => {
   const fetchApprovedGigs = async () => {
-    const q = query(collection(db, "promotedGigs"), where("status", "==", "approved"));
-    const querySnapshot = await getDocs(q);
-    const gigsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setGigs(gigsData);
+    try {
+      const q = query(
+        collection(db, "promotedGigs"),
+        where("status", "==", "approved"),
+        where("visible", "==", true) // 🔥 Only show visible gigs
+      );
+      const querySnapshot = await getDocs(q);
+      const gigsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setGigs(gigsData);
+    } catch (error) {
+      console.error("Error fetching gigs:", error);
+    }
   };
 
   fetchApprovedGigs();
 }, []);
+
+
 
 
 const fallbackImg = "https://ui-avatars.com/api/?name=Seller";
@@ -246,6 +266,7 @@ const fallbackImg = "https://ui-avatars.com/api/?name=Seller";
           ))}
         </div>
       </motion.section>
+     
       <Footer />
     </>
   );
