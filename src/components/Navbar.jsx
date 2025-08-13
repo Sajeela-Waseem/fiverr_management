@@ -6,13 +6,14 @@ import { signOut } from "firebase/auth";
 import { Search } from "lucide-react";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import AuthModal from "./AuthModal";
+import LoginForm from "./LoginForm";
+import SignupForm from "./SignupForm";
 
-// ✅ Utility to get initials from name/email
 const getInitials = (name) => {
   if (!name) return "";
   const parts = name.split(" ");
-  const initials = parts.map((part) => part[0].toUpperCase());
-  return initials.slice(0, 2).join("");
+  return parts.map((part) => part[0].toUpperCase()).slice(0, 2).join("");
 };
 
 // ---------------------- BUYER NAVBAR ----------------------
@@ -20,8 +21,9 @@ export const BuyerNavbar = ({ user }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [authType, setAuthType] = useState("login");
   const dropdownRef = useRef();
-
   const initialTag = new URLSearchParams(location.search).get("tag") || "";
   const [tagSearch, setTagSearch] = useState(initialTag);
   const [suggestions, setSuggestions] = useState([]);
@@ -76,13 +78,19 @@ export const BuyerNavbar = ({ user }) => {
     navigate(`/search?${tagParam}`);
   };
 
-  const handleLogout = () => {
-    signOut(auth).then(() => navigate("/signup"));
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setDropdownOpen(false);
+      window.location.href = "/"; // full reload ensures auth state is refreshed
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
+  
 
   return (
     <nav className="bg-white shadow-md py-3 px-6 flex justify-between items-center sticky top-0 z-50">
-      {/* Logo */}
       <div className="text-green-600 font-extrabold text-2xl cursor-pointer" onClick={() => navigate("/")}>
         Fiverr<sup className="text-xs text-gray-500 font-normal ml-1">®</sup>
       </div>
@@ -129,8 +137,8 @@ export const BuyerNavbar = ({ user }) => {
         </button>
       </div>
 
-      {/* Profile */}
-      {user && (
+      {/* Auth/Profile */}
+      {user ? (
         <div className="relative ml-4" ref={dropdownRef}>
           <div
             onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -159,7 +167,39 @@ export const BuyerNavbar = ({ user }) => {
             </div>
           )}
         </div>
+      ) : (
+        <div className="space-x-4 ml-4">
+          <button
+            onClick={() => {
+              setAuthType("login");
+              setShowModal(true);
+            }}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => {
+              setAuthType("signup");
+              setShowModal(true);
+            }}
+            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+          >
+            Join
+          </button>
+        </div>
       )}
+
+{showModal && (
+  <AuthModal onClose={() => setShowModal(false)}>
+    {authType === "login" ? (
+      <LoginForm onClose={() => setShowModal(false)} />
+    ) : (
+      <SignupForm onClose={() => setShowModal(false)} />
+    )}
+  </AuthModal>
+)}
+
     </nav>
   );
 };
@@ -196,9 +236,16 @@ export const SellerNavbar = ({ user }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    signOut(auth).then(() => navigate("/signup"));
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setDropdownOpen(false);
+      window.location.href = "/"; // full reload ensures auth state is refreshed
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
+  
 
   return (
     <nav className="bg-white shadow-md py-3 px-6 flex justify-between items-center sticky top-0 z-50">
@@ -231,7 +278,7 @@ export const SellerNavbar = ({ user }) => {
                   Profile
                 </button>
                 <button
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/buyer")}
                   className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Switch to Buyer
@@ -251,7 +298,7 @@ export const SellerNavbar = ({ user }) => {
   );
 };
 
-// ---------------------- ROUTE-AWARE NAVBAR WRAPPER ----------------------
+// ---------------------- WRAPPER ----------------------
 const Navbar = ({ user }) => {
   const location = useLocation();
   return location.pathname.startsWith("/seller") ? (
