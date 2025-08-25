@@ -50,7 +50,7 @@ const Footer = () => {
       target="_blank"
       rel="noopener noreferrer"
     >
-      0311-6918845
+      0321-6918943
     </a>
   </p>
 </div>
