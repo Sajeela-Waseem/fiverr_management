@@ -27,6 +27,7 @@ const Footer = () => {
       className="text-white hover:text-green-500 transition"
       target="_blank"
       rel="noopener noreferrer"
+      
     >
       waseemsajeela123@gmail.com
     </a>
