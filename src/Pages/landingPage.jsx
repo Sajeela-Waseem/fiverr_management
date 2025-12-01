@@ -4,6 +4,7 @@ import LPhero from "../Images/LP hero.mp4";
 import About from "../Images/About.jpg";
 import one from "../Images/1.jpg";
 import two from "../Images/2.jpg";
+import tooGig from "../Images/TooGig.png";
 
 import Footer from "../components/footer";
 
@@ -20,26 +21,31 @@ const LandingPage = () => {
     <div className="bg-gray-50 min-h-screen flex flex-col">
 
       {/* Navbar */}
-   <nav className="absolute top-0 left-0 w-full flex justify-between items-center 
-p-6 bg-transparent z-50">
-  <div className="text-white text-2xl font-bold">Fiverr</div>
+ <nav className="absolute top-0 left-0 w-full flex justify-between items-center p-8 bg-transparent z-50">
+  {/* Logo */}
+  <div className="flex items-center space-x-2">
+    <img src={tooGig} alt="TooGig Logo" className="w-30 h-8 sm:w-30 sm:h-20 object-contain" />
+   
+  </div>
 
-  <div className="space-x-4">
+  {/* Buttons */}
+  <div className="space-x-2 sm:space-x-4">
     <button
       onClick={() => setShowAuth(true)}
-      className="border border-2xl text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+      className="border border-white text-white py-1.5 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-green-700 transition-colors"
     >
       Login
     </button>
 
     <button
       onClick={() => setShowAuth(true)}
-      className=" border border-2xl text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+      className="border border-white text-white py-1.5 px-3 sm:py-2 sm:px-4 rounded-lg hover:bg-green-700 transition-colors"
     >
       Sign Up
     </button>
   </div>
 </nav>
+
 
 
       {/* HERO SECTION WITH BACKGROUND VIDEO */}

@@ -9,6 +9,7 @@ import { db } from "../firebase";
 import AuthModal from "./AuthModal";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
+import tooGig1 from "../Images/TooGig1.png";
 
 const getInitials = (name) => {
   if (!name) return "";
@@ -90,9 +91,9 @@ export const BuyerNavbar = ({ user }) => {
   
 
   return (
-    <nav className="bg-white shadow-md py-3 px-6 flex justify-between items-center sticky top-0 z-50">
+    <nav className="bg-white shadow-md py-5 px-6 flex justify-between items-center sticky top-0 z-50">
       <div className="text-green-600 font-extrabold text-2xl cursor-pointer" onClick={() => navigate("/")}>
-        Fiverr<sup className="text-xs text-gray-500 font-normal ml-1">®</sup>
+        <img src={tooGig1} alt="TooGig Logo" className="w-30 h-8 sm:w-30 sm:h-10 object-contain" />
       </div>
 
       {/* Search */}
@@ -248,12 +249,12 @@ export const SellerNavbar = ({ user }) => {
   
 
   return (
-    <nav className="bg-white shadow-md py-3 px-6 flex justify-between items-center sticky top-0 z-50">
+    <nav className="bg-white shadow-md py-5 px-6 flex justify-between items-center sticky top-0 z-50">
       <div
         className="text-green-600 font-extrabold text-2xl cursor-pointer"
         onClick={() => navigate("/seller")}
       >
-        fiverr<sup className="text-xs text-gray-500 font-normal ml-1">®</sup>
+        <img src={tooGig1} alt="TooGig Logo" className="w-30 h-8 sm:w-30 sm:h-10 object-contain" />
       </div>
 
       <div className="flex items-center gap-4">
