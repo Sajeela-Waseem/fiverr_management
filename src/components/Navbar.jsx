@@ -50,7 +50,7 @@ export const BuyerNavbar = ({ user }) => {
   }, []);
 
   useEffect(() => {
-    const fetchProfileImage = async () => {
+    const fetchProfileImage = async () => {7
       if (user) {
         try {
           const userDoc = await getDoc(doc(db, "users", user.uid));
