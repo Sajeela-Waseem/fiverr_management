@@ -67,10 +67,10 @@ const LandingPage = () => {
         {/* HERO CONTENT */}
         <div className="relative z-10 text-white px-6">
           <h2 className="text-5xl font-bold mb-6 drop-shadow-md">
-            Welcome to Our Platform!
+          Save More on Every Gig
           </h2>
           <p className="text-xl mb-8 drop-shadow-md">
-            Sign in or sign up to explore all the amazing features we offer.
+            Unlock Freelance Services With Instant Discount
           </p>
         </div>
 
@@ -89,10 +89,8 @@ const LandingPage = () => {
             </h2>
 
             <p className="text-gray-700 text-lg leading-relaxed">
-              We're John and Jai, co-founders of Hydrant. Our journey started when both
-              of us (John, a scientist, and Jai, a finance consultant) were trying to
-              solve the same problem on opposite sides of the US. After a friend
-              connected us, the rest is history.
+            Toogig is a discount powered freelance marketplace that gives you instant savings on top-quality services.
+            We’re here to make freelance services affordable, transparent, and accessible for everyone, from small businesses to creators and startups.
             </p>
           </div>
 
@@ -209,8 +207,8 @@ const LandingPage = () => {
     <div className="space-y-6">
  {/* Heading */}
       <h2 className="text-6xl font-bold text-gray-900 leading-tight">
-        Freelance services at your 
-        <span className="text-orange-500 font-italic"> fingertips</span>
+       Experience more value, more flexibility, and more savings with 
+        <span className="text-orange-500 font-italic"> Toogig.</span>
       </h2>
 
   

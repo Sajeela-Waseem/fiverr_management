@@ -10,7 +10,7 @@ const Footer = () => {
         <div>
           <h3 className="text-[#1dbf73] font-semibold text-base mb-2">About Us</h3>
           <p className="text-gray-300 leading-relaxed">
-            At Fiverr management’s platform, we connect talented freelancers with
+            At Toogig platform, we connect talented freelancers with
             ambitious clients across the globe. Our mission is to enable growth
             through trusted digital services and world-class collaboration.
           </p>
