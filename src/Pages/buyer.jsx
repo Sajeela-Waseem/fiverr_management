@@ -170,10 +170,7 @@ const Buyer = () => {
                 <p className="font-medium text-md text-gray-800 mt-2">
                   From <span className="text-green-800">{freelancer.rate}</span>
                 </p>
-                <button className="mt-4 bg-green-900 text-white px-4 py-2 rounded hover:bg-green-800 transition">
-                  Order Now
-                </button>
-              </div>
+             </div>
             </div>
           ))}
         </div>
