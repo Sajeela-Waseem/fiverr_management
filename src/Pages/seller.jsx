@@ -56,8 +56,8 @@ const Seller = () => {
     const existingGigsSnap = await getDocs(gigQuery);
     const gigCount = existingGigsSnap.size;
   
-    if (gigCount >= 5) {
-      alert("⚠️ You can only promote 5 active gigs. Delete or wait for rejection to add more.");
+    if (gigCount >= 20) {
+      alert("⚠️ You can only promote 20 active gigs. Delete or wait for rejection to add more.");
       return;
     }
   
