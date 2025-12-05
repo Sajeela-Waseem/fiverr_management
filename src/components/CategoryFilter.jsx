@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 const categories = [
   {
     name: "Programming & Tech",
-    sub: ["Web Development", "App Development", "Automation"],
+    sub: ["Web Development", "App Development","Software Development"],
   },
   {
     name: "Marketing & Sales",
