@@ -92,6 +92,16 @@ const Buyer = () => {
     { name: "Khurram Nadeem", title: "Graphics Designer", image: freelancer, rate: "$20/hr" },
     { name: "Fateh Ali", title: "Digital Marketer", image: freelancer, rate: "$20/hr" },
   ];
+  // Pagination
+const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 12;
+
+const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const currentGigs = gigs.slice(indexOfFirstItem, indexOfLastItem);
+
+const totalPages = Math.ceil(gigs.length / itemsPerPage);
+
 
   return (
     <>
@@ -106,7 +116,7 @@ const Buyer = () => {
         <p className="text-gray-600 mb-8">Explore the best services that suit you & Get a discount on Fiverr.</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {gigs.map((gig, index) => (
+          {currentGigs.map((gig, index) => (
             <div key={index} className="relative bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:scale-105 flex flex-col">
               <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
                 -{gig.discount}%
@@ -151,6 +161,28 @@ const Buyer = () => {
             </div>
           ))}
         </div>
+        <div className="flex justify-center items-center gap-4 mt-10">
+  <button
+    onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+    disabled={currentPage === 1}
+    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+  >
+    Prev
+  </button>
+
+  <span className="font-semibold">
+    Page {currentPage} of {totalPages}
+  </span>
+
+  <button
+    onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+    disabled={currentPage === totalPages}
+    className="px-4 py-2 bg-green-800 text-white rounded disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
       </section>
 
       <motion.section initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="bg-gray-50 py-10 px-6">
