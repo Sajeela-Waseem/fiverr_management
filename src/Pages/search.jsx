@@ -160,45 +160,55 @@ const prevPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
             {currentGigs.map((gig, idx) => (
  <div
-                key={idx}
-                className="bg-white rounded-lg shadow-md border overflow-hidden flex flex-col"
-              >
-                <a
-                  href={gig.affiliateLink || gig.gigLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src={gig.gigImage}
-                    alt={gig.gigTitle}
-                    className="w-full h-48 object-cover"
-                  />
-                </a>
+  key={idx}
+  className="bg-white rounded-lg shadow-md border overflow-hidden flex flex-col"
+>
+  <div className="relative">
+    <a
+      href={gig.affiliateLink || gig.gigLink}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src={gig.gigImage}
+        alt={gig.gigTitle}
+        className="w-full h-48 object-cover"
+      />
+    </a>
 
-                <div className="p-4 flex flex-col flex-grow justify-between">
-                  <div>
-                    <a
-                      href={gig.affiliateLink || gig.gigLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <h3 className="font-bold text-lg text-gray-800 mb-2">
-                        {gig.gigTitle}
-                      </h3>
-                    </a>
-                    <p className="text-sm text-gray-500 mb-4">
-                      {gig.category} / {gig.subcategory || "N/A"}
-                    </p>
-                  </div>
+    {/* ⭐ SAME DISCOUNT BADGE YOU MADE ON BUYER PAGE */}
+    {gig.discount && (
+      <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+        -{gig.discount}%
+      </div>
+    )}
+  </div>
 
-                  <button
-                    onClick={() => handleGetCoupon(gig)}
-                    className="w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium py-2 px-4 rounded transition-colors mt-auto"
-                  >
-                    Get a Coupon Code
-                  </button>
-                </div>
-              </div>
+  <div className="p-4 flex flex-col flex-grow justify-between">
+    <div>
+      <a
+        href={gig.affiliateLink || gig.gigLink}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <h3 className="font-bold text-lg text-gray-800 mb-2">
+          {gig.gigTitle}
+        </h3>
+      </a>
+      <p className="text-sm text-gray-500 mb-4">
+        {gig.category} / {gig.subcategory || "N/A"}
+      </p>
+    </div>
+
+    <button
+      onClick={() => handleGetCoupon(gig)}
+      className="w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium py-2 px-4 rounded transition-colors mt-auto"
+    >
+      Get a Coupon Code
+    </button>
+  </div>
+</div>
+
             ))}
           </div>
         )}
