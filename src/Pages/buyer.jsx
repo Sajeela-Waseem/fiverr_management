@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
-import freelancer from "../Images/freelancer.webp";
+import three from "../Images/3.jpg";
+import four from "../Images/4.jpg";
+import five from "../Images/5.jpg";
+import six from "../Images/6.jpg";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
 import Footer from "../components/footer";
@@ -87,10 +90,10 @@ const Buyer = () => {
   };
 
   const freelancers = [
-    { name: "Awais Nadeem", title: "Virtual Assistant", image: freelancer, rate: "$25/hr" },
-    { name: "Abdul Basit", title: "WordPress Developer", image: freelancer, rate: "$20/hr" },
-    { name: "Khurram Nadeem", title: "Graphics Designer", image: freelancer, rate: "$20/hr" },
-    { name: "Fateh Ali", title: "Digital Marketer", image: freelancer, rate: "$20/hr" },
+    { name: "Awais Nadeem", title: "Virtual Assistant", image: three, rate: "$25/hr" },
+    { name: "Fateh Ali", title: "Digital Marketer", image: four, rate: "$20/hr" },
+    { name: "Khurram Nadeem", title: "Graphics Designer", image: five, rate: "$20/hr" },
+    { name: "Sajeela Waseem", title: "Web Developer", image: six, rate: "$20/hr" },
   ];
   // Pagination
 const [currentPage, setCurrentPage] = useState(1);
@@ -99,7 +102,6 @@ const itemsPerPage = 12;
 const indexOfLastItem = currentPage * itemsPerPage;
 const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 const currentGigs = gigs.slice(indexOfFirstItem, indexOfLastItem);
-
 const totalPages = Math.ceil(gigs.length / itemsPerPage);
 
 
