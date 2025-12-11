@@ -200,13 +200,13 @@ const LandingPage = () => {
 
 
 /* FIVERR LOGO MAKER STYLE SECTION */}
-<section className="bg-[#fdeee7] px-20 py-10 m-20 rounded-3xl">
+<section className="bg-[#fdeee7] sm:px-20 px-4 sm:py-10 py-4 sm:m-20 rounded-3xl">
   <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-5 items-center">
 
     {/* LEFT SIDE CONTENT */}
     <div className="space-y-6">
  {/* Heading */}
-      <h2 className="text-6xl font-bold text-gray-900 leading-tight">
+      <h2 className="sm:text-6xl text-4xl font-bold text-gray-900 leading-tight">
        Experience more value, more flexibility, and more savings with 
         <span className="text-orange-500 font-italic"> Toogig.</span>
       </h2>
