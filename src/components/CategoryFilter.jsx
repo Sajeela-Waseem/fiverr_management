@@ -21,11 +21,11 @@ const categories = [
   },
   {
     name: "Virtual Assistant",
-    sub: ["Admin Tasks", "Data Entry", "Scheduling"],
+    sub: ["Admin Tasks", "Data Entry", "Scheduling", "Lead generation"],
   },
   {
     name: "Content Writing",
-    sub: ["Blogs", "Product Descriptions", "Proofreading"],
+    sub: ["Blogs", "Product Descriptions", "Proofreading","Copy Paste Content"],
   },
   {
     name: "UI/UX Design",
@@ -35,6 +35,7 @@ const categories = [
     name: "Customer Support",
     sub: ["Live Chat", "Email Support", "CRM Management"],
   },
+  
 ];
 
 const CategoryFilter = ({ selectedCategory, setSelectedCategory }) => {
