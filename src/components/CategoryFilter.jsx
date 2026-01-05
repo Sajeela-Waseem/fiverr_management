@@ -21,11 +21,11 @@ const categories = [
   },
   {
     name: "Virtual Assistant",
-    sub: ["Admin Tasks", "Data Entry", "Scheduling", "Lead generation"],
+    sub: ["Admin Tasks", "Data Entry", "Scheduling", "Lead generation", "GHL"],
   },
   {
     name: "Content Writing",
-    sub: ["Blogs", "Product Descriptions", "Proofreading","Copy Paste Content"],
+    sub: ["Blogs", "Product Descriptions", "Proofreading","Copy Paste Content","Data Scraping"],
   },
   {
     name: "UI/UX Design",
