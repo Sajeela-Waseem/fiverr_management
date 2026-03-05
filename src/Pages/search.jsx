@@ -148,12 +148,13 @@ const prevPage = () => {
       />
 
       <div className="bg-white min-h-screen">
+     
         <h1 className="text-3xl font-bold mb-6 text-center text-white bg-green-700 p-4">
           Search Result: {category || "All"}
           {subcategory && ` / ${subcategory}`}
           {tag && ` / ${tag}`}
         </h1>
-
+  <div className="max-w-7xl mx-auto px-6">
         {filteredGigs.length === 0 ? (
           <p className="text-gray-600 text-center">No gigs found for this filter.</p>
         ) : (
@@ -233,7 +234,7 @@ const prevPage = () => {
     Next
   </button>
 </div>
-
+     </div>
       </div>
 
       <Footer />

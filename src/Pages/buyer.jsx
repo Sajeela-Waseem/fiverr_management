@@ -114,6 +114,7 @@ const totalPages = Math.ceil(gigs.length / itemsPerPage);
       </div>
 
       <section className="py-10 px-10 text-center bg-white">
+          <div className="max-w-7xl mx-auto px-6">
         <h2 className="text-3xl font-bold mb-2">Latest Services</h2>
         <p className="text-gray-600 mb-8">Explore the best services that suit you & Get a discount on Fiverr.</p>
 
@@ -184,9 +185,9 @@ const totalPages = Math.ceil(gigs.length / itemsPerPage);
     Next
   </button>
 </div>
-
+</div>
       </section>
-
+        <div className="max-w-7xl mx-auto px-6">
       <motion.section initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="bg-gray-50 py-10 px-6">
         <div className="max-w-7xl mx-auto text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-900">Top Rated Freelancers</h2>
@@ -209,6 +210,7 @@ const totalPages = Math.ceil(gigs.length / itemsPerPage);
           ))}
         </div>
       </motion.section>
+       </div>
 
       <Footer />
     </>
