@@ -8,6 +8,7 @@ import SellerPreviewPage from "./Pages/sellerPreviewPage";
 import ScrollToTop from "./components/ScrollToTop";
 import LandingPage from "./Pages/landingPage";
 import AuthModal from "./components/AuthModal";
+import Chat from "./Pages/Chat";
 
 
 import { onAuthStateChanged } from "firebase/auth";  // <-- IMPORTANT
@@ -49,7 +50,7 @@ const App = () => {
 <Route path="/search" element={<Search />} />
 <Route path="/seller/profile" element={<ProfilePage />} />
 <Route path="/seller/:uid" element={<SellerPreviewPage />} />
-
+  <Route path="/chat" element={<Chat />} />
 <Route path="*" element={<div>404 – Page Not Found</div>} />
 
       </Routes>

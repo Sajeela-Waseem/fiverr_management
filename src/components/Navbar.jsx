@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
-import { Search } from "lucide-react";
+import { Search, MessageSquare } from "lucide-react";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import AuthModal from "./AuthModal";
@@ -50,7 +50,7 @@ export const BuyerNavbar = ({ user }) => {
   }, []);
 
   useEffect(() => {
-    const fetchProfileImage = async () => {7
+    const fetchProfileImage = async () => {
       if (user) {
         try {
           const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -83,12 +83,11 @@ export const BuyerNavbar = ({ user }) => {
     try {
       await signOut(auth);
       setDropdownOpen(false);
-      window.location.href = "/"; // full reload ensures auth state is refreshed
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
-  
 
   return (
     <nav className="bg-white shadow-md py-5 px-6 flex justify-between items-center sticky top-0 z-50">
@@ -138,69 +137,74 @@ export const BuyerNavbar = ({ user }) => {
         </button>
       </div>
 
-      {/* Auth/Profile */}
-      {user ? (
-        <div className="relative ml-4" ref={dropdownRef}>
-          <div
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-9 h-9 rounded-full bg-green-600 text-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden"
+      {/* Right side icons */}
+      <div className="flex items-center gap-3 ml-4">
+        {user && (
+          <button
+            onClick={() => navigate("/chat")}
+            className="text-gray-700 hover:text-green-600"
+            title="Messages"
           >
-            {profileImage ? (
-              <img src={profileImage} alt="Avatar" className="w-full h-full object-cover rounded-full" />
-            ) : (
-              getInitials(user.displayName || user.email)
+            <MessageSquare className="w-6 h-6" />
+          </button>
+        )}
+
+        {user ? (
+          <div className="relative" ref={dropdownRef}>
+            <div
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="w-9 h-9 rounded-full bg-green-600 text-white flex items-center justify-center font-semibold cursor-pointer overflow-hidden"
+            >
+              {profileImage ? (
+                <img src={profileImage} alt="Avatar" className="w-full h-full object-cover rounded-full" />
+              ) : (
+                getInitials(user.displayName || user.email)
+              )}
+            </div>
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-44 bg-white border rounded-md shadow-lg z-50">
+                <button
+                  onClick={() => navigate("/seller")}
+                  className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Switch to Seller
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
             )}
           </div>
-          {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-44 bg-white border rounded-md shadow-lg z-50">
-              <button
-                onClick={() => navigate("/seller")}
-                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Switch to Seller
-              </button>
-              <button
-                onClick={handleLogout}
-                className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
-              >
-                Logout
-              </button>
-            </div>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setAuthType("login"); setShowModal(true); }}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => { setAuthType("signup"); setShowModal(true); }}
+              className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Join
+            </button>
+          </div>
+        )}
+      </div>
+
+      {showModal && (
+        <AuthModal onClose={() => setShowModal(false)}>
+          {authType === "login" ? (
+            <LoginForm onClose={() => setShowModal(false)} />
+          ) : (
+            <SignupForm onClose={() => setShowModal(false)} />
           )}
-        </div>
-      ) : (
-        <div className="space-x-4 ml-4">
-          <button
-            onClick={() => {
-              setAuthType("login");
-              setShowModal(true);
-            }}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => {
-              setAuthType("signup");
-              setShowModal(true);
-            }}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
-          >
-            Join
-          </button>
-        </div>
+        </AuthModal>
       )}
-
-{showModal && (
-  <AuthModal onClose={() => setShowModal(false)}>
-    {authType === "login" ? (
-      <LoginForm onClose={() => setShowModal(false)} />
-    ) : (
-      <SignupForm onClose={() => setShowModal(false)} />
-    )}
-  </AuthModal>
-)}
-
     </nav>
   );
 };
@@ -241,12 +245,11 @@ export const SellerNavbar = ({ user }) => {
     try {
       await signOut(auth);
       setDropdownOpen(false);
-      window.location.href = "/"; // full reload ensures auth state is refreshed
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
-  
 
   return (
     <nav className="bg-white shadow-md py-5 px-6 flex justify-between items-center sticky top-0 z-50">
@@ -257,7 +260,17 @@ export const SellerNavbar = ({ user }) => {
         <img src={tooGig1} alt="TooGig Logo" className="w-30 h-8 sm:w-30 sm:h-10 object-contain" />
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {user && (
+          <button
+            onClick={() => navigate("/chat")}
+            className="text-gray-700 hover:text-green-600"
+            title="Messages"
+          >
+            <MessageSquare className="w-6 h-6" />
+          </button>
+        )}
+
         {user && (
           <div className="relative" ref={dropdownRef}>
             <div

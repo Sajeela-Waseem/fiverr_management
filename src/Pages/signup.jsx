@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider, db } from "../firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, collection, query, where, getDocs } from "firebase/firestore";
 import signup from "../Images/signup.jpg";
 
 const Signup = () => {
@@ -11,6 +11,14 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [showEmailForm, setShowEmailForm] = useState(false);
   const navigate = useNavigate();
+
+  const saveUserToFirestore = async (user) => {
+    await setDoc(doc(db, "users", user.uid), {
+      name: user.displayName || email.split("@")[0],
+      email: user.email,
+      createdAt: serverTimestamp()
+    }, { merge: true });
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -25,7 +33,8 @@ const Signup = () => {
         return;
       }
 
-      await createUserWithEmailAndPassword(auth, email, password);
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await saveUserToFirestore(result.user); // ✅ save to Firestore
       navigate("/fiverr");
     } catch (err) {
       setError(err.message);
@@ -34,7 +43,8 @@ const Signup = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      await saveUserToFirestore(result.user); // ✅ save to Firestore
       navigate("/fiverr");
     } catch (err) {
       console.error(err);
@@ -85,16 +95,10 @@ const Signup = () => {
 
           {!showEmailForm && (
             <div className="flex gap-2 mb-3">
-              <button
-                type="button"
-                className="w-1/2 flex justify-center gap-2 border border-gray-300 py-2 rounded hover:bg-gray-100"
-              >
+              <button type="button" className="w-1/2 flex justify-center gap-2 border border-gray-300 py-2 rounded hover:bg-gray-100">
                 Apple
               </button>
-              <button
-                type="button"
-                className="w-1/2 flex justify-center gap-2 border border-gray-300 py-2 rounded hover:bg-gray-100"
-              >
+              <button type="button" className="w-1/2 flex justify-center gap-2 border border-gray-300 py-2 rounded hover:bg-gray-100">
                 Facebook
               </button>
             </div>
@@ -132,13 +136,9 @@ const Signup = () => {
 
           <p className="text-xs text-gray-500 mt-6">
             By joining, you agree to the Fiverr{" "}
-            <a href="#" className="underline">
-              Terms of Service
-            </a>{" "}
+            <a href="#" className="underline">Terms of Service</a>{" "}
             and to occasionally receive emails from us. Please read our{" "}
-            <a href="#" className="underline">
-              Privacy Policy
-            </a>{" "}
+            <a href="#" className="underline">Privacy Policy</a>{" "}
             to learn how we use your personal data.
           </p>
         </form>

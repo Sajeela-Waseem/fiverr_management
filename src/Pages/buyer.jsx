@@ -129,7 +129,7 @@ const totalPages = Math.ceil(gigs.length / itemsPerPage);
               </a>
 
               <div className="p-2 flex flex-col flex-grow">
-                <div onClick={() => navigate(`/seller/${gig.sellerUid}`)} className="flex items-center pb-2 gap-3 mt-3 cursor-pointer group">
+                <div onClick={() => navigate(`/seller/${gig.sellerName}`)} className="flex items-center pb-2 gap-3 mt-3 cursor-pointer group">
                   <img
                     src={
                       gig.sellerImage?.trim()
@@ -151,15 +151,31 @@ const totalPages = Math.ceil(gigs.length / itemsPerPage);
                   {gig.gigTitle}
                 </a>
                 <p className="text-start text-sm text-gray-500">{gig.category} / {gig.subcategory || "No subcategory"}</p>
-                <div className="mt-auto">
-                  {user ? (
-                    <button onClick={() => handleGetCoupon(gig)} className="w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium py-2 px-4 rounded transition-colors">
-                      Get a Coupon Code
-                    </button>
-                  ) : (
-                    <p className="text-sm text-red-600 font-medium text-center py-2"></p>
-                  )}
-                </div>
+           <div className="mt-auto">
+  {user ? (
+    <div className="flex flex-col gap-2">
+
+      <button
+        onClick={() => handleGetCoupon(gig)}
+        className="w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium py-2 px-4 rounded"
+      >
+        Get a Coupon Code
+      </button>
+
+      <button
+        onClick={() => navigate(`/chat?seller=${gig.sellerName}`)}
+        className="w-full border border-green-700 text-green-700 hover:bg-green-50 text-sm font-medium py-2 px-4 rounded"
+      >
+        Contact Seller
+      </button>
+
+    </div>
+  ) : (
+    <p className="text-sm text-red-600 font-medium text-center py-2">
+      Login to contact seller
+    </p>
+  )}
+</div>
               </div>
             </div>
           ))}
