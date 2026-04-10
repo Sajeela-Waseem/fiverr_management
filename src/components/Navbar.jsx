@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { Search, MessageSquare } from "lucide-react";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import AuthModal from "./AuthModal";
 import LoginForm from "./LoginForm";
@@ -15,6 +15,73 @@ const getInitials = (name) => {
   if (!name) return "";
   const parts = name.split(" ");
   return parts.map((part) => part[0].toUpperCase()).slice(0, 2).join("");
+};
+
+// ✅ Unread messages count hook
+const useUnreadCount = (user) => {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const q = query(
+      collection(db, "conversations"),
+      where("members", "array-contains", user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const convos = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      const listeners = [];
+      const counts = {};
+
+      convos.forEach((conv) => {
+        const messagesRef = query(
+          collection(db, "conversations", conv.id, "messages"),
+          where("read", "==", false)
+        );
+
+        const unsub = onSnapshot(messagesRef, (msgSnap) => {
+          const unread = msgSnap.docs.filter(
+            d => d.data().senderId !== user.uid
+          ).length;
+
+          counts[conv.id] = unread;
+
+          const total = Object.values(counts).reduce((a, b) => a + b, 0);
+          setUnreadCount(total);
+        });
+
+        listeners.push(unsub);
+      });
+
+      return () => listeners.forEach(unsub => unsub());
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  return unreadCount;
+};
+
+// ✅ Message icon with badge
+const MessageIcon = ({ user, navigate }) => {
+  const unreadCount = useUnreadCount(user);
+
+  return (
+    <button
+      onClick={() => navigate("/chat")}
+      className="relative text-gray-700 hover:text-green-600"
+      title="Messages"
+    >
+      <MessageSquare className="w-6 h-6" />
+      {unreadCount > 0 && (
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+          {unreadCount > 9 ? "9+" : unreadCount}
+        </span>
+      )}
+    </button>
+  );
 };
 
 // ---------------------- BUYER NAVBAR ----------------------
@@ -139,15 +206,7 @@ export const BuyerNavbar = ({ user }) => {
 
       {/* Right side icons */}
       <div className="flex items-center gap-3 ml-4">
-        {user && (
-          <button
-            onClick={() => navigate("/chat")}
-            className="text-gray-700 hover:text-green-600"
-            title="Messages"
-          >
-            <MessageSquare className="w-6 h-6" />
-          </button>
-        )}
+        {user && <MessageIcon user={user} navigate={navigate} />}
 
         {user ? (
           <div className="relative" ref={dropdownRef}>
@@ -261,15 +320,7 @@ export const SellerNavbar = ({ user }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        {user && (
-          <button
-            onClick={() => navigate("/chat")}
-            className="text-gray-700 hover:text-green-600"
-            title="Messages"
-          >
-            <MessageSquare className="w-6 h-6" />
-          </button>
-        )}
+        {user && <MessageIcon user={user} navigate={navigate} />}
 
         {user && (
           <div className="relative" ref={dropdownRef}>

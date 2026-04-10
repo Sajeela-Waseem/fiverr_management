@@ -10,7 +10,8 @@ import {
   serverTimestamp,
   getDocs,
   getDoc,
-  doc
+  doc,
+  updateDoc
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import Navbar from "../components/Navbar";
@@ -23,7 +24,7 @@ const Chat = () => {
   const [userNames, setUserNames] = useState({});
   const messagesEndRef = useRef();
   const navigate = useNavigate();
-  const initDone = useRef(false); // ✅ prevents double run
+  const initDone = useRef(false);
 
   const currentUser = auth.currentUser;
 
@@ -34,7 +35,7 @@ const Chat = () => {
   // 🔥 Create chat by looking up seller UID from name
   useEffect(() => {
     if (!currentUser) return;
-    if (initDone.current) return; // ✅ stop duplicate runs
+    if (initDone.current) return;
     initDone.current = true;
 
     const initChat = async () => {
@@ -57,7 +58,6 @@ const Chat = () => {
 
         const sellerUid = usersSnapshot.docs[0].id;
 
-        // ✅ prevent creating convo with yourself
         if (sellerUid === currentUser.uid) return;
 
         const q = query(
@@ -102,7 +102,6 @@ const Chat = () => {
         ...d.data()
       }));
 
-      // ✅ Deduplicate by other member's UID
       const seen = new Set();
       const uniqueConvos = convos.filter(conv => {
         const otherUid = conv.members.find(id => id !== currentUser.uid);
@@ -117,30 +116,29 @@ const Chat = () => {
         setChatId(prev => prev || uniqueConvos[0].id);
       }
 
-      // ✅ Only fetch names we don't already have
       const uidsToFetch = uniqueConvos
         .map(conv => conv.members.find(id => id !== currentUser.uid))
         .filter(uid => uid && !userNames[uid]);
 
       if (uidsToFetch.length === 0) return;
 
-     const names = {};
-await Promise.all(
-  uidsToFetch.map(async (uid) => {
-    try {
-      const userDoc = await getDoc(doc(db, "users", uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        names[uid] = data.name || data.displayName || data.email || "Unknown";
-      } else {
-        names[uid] = uid.substring(0, 8) + "...";
-      }
-    } catch (err) {
-      console.error("Error fetching user name:", err);
-      names[uid] = "Unknown";
-    }
-  })
-);
+      const names = {};
+      await Promise.all(
+        uidsToFetch.map(async (uid) => {
+          try {
+            const userDoc = await getDoc(doc(db, "users", uid));
+            if (userDoc.exists()) {
+              const data = userDoc.data();
+              names[uid] = data.name || data.displayName || data.email || "Unknown";
+            } else {
+              names[uid] = uid.substring(0, 8) + "...";
+            }
+          } catch (err) {
+            console.error("Error fetching user name:", err);
+            names[uid] = "Unknown";
+          }
+        })
+      );
 
       setUserNames(prev => ({ ...prev, ...names }));
     });
@@ -167,6 +165,29 @@ await Promise.all(
     return () => unsubscribe();
   }, [chatId]);
 
+  // ✅ Mark messages as read when chat is opened
+  useEffect(() => {
+    if (!chatId || !currentUser) return;
+
+    const markAsRead = async () => {
+      const q = query(
+        collection(db, "conversations", chatId, "messages"),
+        where("read", "==", false)
+      );
+
+      const snapshot = await getDocs(q);
+      snapshot.docs.forEach(async (msgDoc) => {
+        if (msgDoc.data().senderId !== currentUser.uid) {
+          await updateDoc(doc(db, "conversations", chatId, "messages", msgDoc.id), {
+            read: true
+          });
+        }
+      });
+    };
+
+    markAsRead();
+  }, [chatId]); // ✅ runs every time user switches to a different chat
+
   // 📤 Send message
   const sendMessage = async () => {
     if (!text.trim()) return;
@@ -177,6 +198,7 @@ await Promise.all(
         {
           text,
           senderId: currentUser.uid,
+          read: false, // ✅ new messages start as unread
           createdAt: serverTimestamp()
         }
       );
